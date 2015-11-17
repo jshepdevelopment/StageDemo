@@ -22,6 +22,8 @@ public class StageDemo implements ApplicationListener {
     // create Actor "Bubble that displays TextureRegion passed
     class Bubble extends Actor {
         private TextureRegion _texture;
+        float actorX = 0, actorY = 0;
+        public boolean started = false;
 
         public Bubble(TextureRegion texture){
             _texture = texture;
@@ -37,13 +39,15 @@ public class StageDemo implements ApplicationListener {
         }
 
         // implements draw() completely to handle rotation and scaling
-        public void draw(Batch batch, float alpha){
+        public void draw(Batch batch, float alpha) {
             batch.draw(_texture, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(),
                     getScaleX(), getScaleY(), getRotation());
         }
 
         // hit() instead of bounding box, checks bounding circle
         public Actor hit(float x, float y, boolean touchable){
+            started = true;
+
             // If this Actor is hidden or untouchable, it cant be hit
             if(!this.isVisible() || this.getTouchable() == Touchable.disabled)
                 return null;
@@ -70,6 +74,14 @@ public class StageDemo implements ApplicationListener {
             // no hit
             return null;
         }
+
+        @Override
+        public void act(float delta){
+            if(started){
+                actorY=5;
+                started=false;
+            }
+        }
     }
 
     private Bubble[] bubbles;
@@ -80,6 +92,7 @@ public class StageDemo implements ApplicationListener {
 
     @Override
     public void create() {
+
         // stage = new Stage(Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),true);
         stage = new Stage();
         final TextureRegion bubbleTexture = new TextureRegion(new Texture("bubble.png"));
@@ -95,7 +108,6 @@ public class StageDemo implements ApplicationListener {
         for(int i = 0; i < bubbleCount; i++){
             bubbles[i] = new Bubble(bubbleTexture);
             moveActions[i] = new MoveToAction();
-            Vector2 coords = new Vector2(bubbles[i].getX(), bubbles[i].getY());
 
             //Assign the position of the bubble to a random value within the screen boundaries
             int randomX = random.nextInt(Gdx.graphics.getWidth() - (int)bubbles[i].getWidth());
@@ -108,10 +120,6 @@ public class StageDemo implements ApplicationListener {
             moveActions[i].setPosition(randomX, 2600f);
             moveActions[i].setDuration(random.nextFloat());
             bubbles[i].addAction(moveActions[i]);
-
-//            bubbles[i].localToStageCoordinates(coords);
-//            bubbles[i].getStage().stageToScreenCoordinates(coords);
-            Gdx.app.log("JSLOG", " bubbles[i].getY() + coords.y)"+ bubbles[i].getY() + " " + coords.y);
 
             //if(moveActions[i].getY() > 2500f) {
             //    moveActions[i].setPosition(randomX, 0 - (int) bubbles[i].getHeight());
