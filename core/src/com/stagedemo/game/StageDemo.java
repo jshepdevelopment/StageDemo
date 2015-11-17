@@ -6,12 +6,14 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.badlogic.gdx.scenes.scene2d.actions.ScaleToAction;
 
 import java.util.Random;
 
@@ -72,6 +74,7 @@ public class StageDemo implements ApplicationListener {
 
     private Bubble[] bubbles;
     private MoveToAction[] moveActions;
+
     private int bubbleCount = 15;
     private Stage stage;
 
@@ -92,17 +95,27 @@ public class StageDemo implements ApplicationListener {
         for(int i = 0; i < bubbleCount; i++){
             bubbles[i] = new Bubble(bubbleTexture);
             moveActions[i] = new MoveToAction();
+            Vector2 coords = new Vector2(bubbles[i].getX(), bubbles[i].getY());
 
             //Assign the position of the bubble to a random value within the screen boundaries
-            int randomX = random.nextInt(Gdx.graphics.getWidth()- (int)bubbles[i].getWidth());
+            int randomX = random.nextInt(Gdx.graphics.getWidth() - (int)bubbles[i].getWidth());
 
-            bubbles[i].setPosition(randomX, 0 - (int)bubbles[i].getHeight());
+            bubbles[i].setScale(random.nextFloat());
+            bubbles[i].setPosition(randomX, 0 - (int) bubbles[i].getHeight());
             // Set the name of the bubble to it's index within the loop
             bubbles[i].setName(Integer.toString(i));
 
-            moveActions[i].setPosition(randomX, 2500f);
+            moveActions[i].setPosition(randomX, 2600f);
             moveActions[i].setDuration(random.nextFloat());
             bubbles[i].addAction(moveActions[i]);
+
+//            bubbles[i].localToStageCoordinates(coords);
+//            bubbles[i].getStage().stageToScreenCoordinates(coords);
+            Gdx.app.log("JSLOG", " bubbles[i].getY() + coords.y)"+ bubbles[i].getY() + " " + coords.y);
+
+            //if(moveActions[i].getY() > 2500f) {
+            //    moveActions[i].setPosition(randomX, 0 - (int) bubbles[i].getHeight());
+            //}
 
             // Add them to the stage
             stage.addActor(bubbles[i]);
